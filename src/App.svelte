@@ -424,6 +424,8 @@
   let endColorPickerVisible = false;
   let finished = false;
 
+  let playStartTime; //for measurement
+
   const maxHeight = 700;
 
   const startSort = () => {
@@ -432,6 +434,10 @@
     const sortNext = () => {
       const { done } = sortIter.next();
       if (done) {
+        if (playStartTime) {
+          console.log(Date.now() - playStartTime);
+          playStartTime = undefined;
+        }
         resetSettings();
         finished = true;
       }
@@ -556,10 +562,16 @@
           {/each}
         </select>
       </div>
-      <button on:click={() => (playing = !playing)} disabled={finished}>
+      <button
+        on:click={() => {
+          playing = !playing;
+          playStartTime = Date.now();
+        }}
+        disabled={finished}
+      >
         {playing ? "Pause" : "Start"}
       </button>
-      <button on:click={() => (nextFlag = true)} disabled={finished}>
+      <button on:click={() => (nextFlag = true)} disabled={finished || playing}>
         Step Over
       </button>
     </div>
